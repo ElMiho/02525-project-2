@@ -38,5 +38,5 @@ for i in range(19):
     mean_meat_list.append(mean_meat)
 
 # Calculate S1 (fat) and S2 (meat)
-p1 = 0.3
+p1 = 0.5
 p2 = 1 - p1
