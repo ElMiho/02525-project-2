@@ -25,6 +25,9 @@ error_rates = []
 fat_masks = []
 meat_masks = []
 
+mean_fats = []
+mean_meats = []
+
 for i in range(19):
     channel = multispectral_day01[:,:,i]
     meat_mask_actual = np.logical_and(meat_channel_mask, salami_mask)
@@ -36,7 +39,9 @@ for i in range(19):
 
     mean_meat = masked_channel_meat.mean()
     mean_fat = masked_channel_fat.mean()
-    
+    mean_meats.append(mean_meat)
+    mean_fats.append(mean_fat)
+
     # Threshold values (gotten by solving normal_dist(mu_mean) = normal_dist(mu_fat))
     t = 1/2 * (mean_meat + mean_fat)
     thresholds.append(t)
@@ -72,48 +77,55 @@ for i in range(19):
     fat_masks.append(fat_mask_predicted)
     meat_masks.append(meat_mask_predicted)
 
-    print(f"[{i+1}/19] --- mean_meat = {mean_meat} --- mean_fat = {mean_fat}")
-
-print(thresholds)
-
-# Confusion matrix format
-# Row: True label, Column: Predicted label
-#       False, True
-# False   ?      ?
-# True    ?      ?
-print(confusion_matrices[19//2])
-
-for i, e in enumerate(error_rates):
-    print(i+1, e)
+    # print(f"[{i+1}/19] --- mean_meat = {mean_meat} --- mean_fat = {mean_fat}")
 
 # Lowest error
 best_spectral_band = np.argmin(error_rates)
 
-print(f"Best spectral band: {1+best_spectral_band}")
 
 
 
-plt.tight_layout()
-plt.subplot(1,3,1)
-plt.title("Fat mask")
-fat_mask = fat_masks[best_spectral_band]
-plt.imshow(fat_mask)
+if __name__ == "__main__":    
+    print(thresholds)
 
-plt.subplot(1,3,2)
-plt.title("Annotations")
-plt.imshow(annotation_day01)
+    # Confusion matrix format
+    # Row: True label, Column: Predicted label
+    #       False, True
+    # False   ?      ?
+    # True    ?      ?
+    print(confusion_matrices[19//2])
 
-plt.subplot(1,3,3)
-plt.title("Meat mask")
-meat_mask = meat_masks[best_spectral_band]
-plt.imshow(meat_mask)
-plt.show()
+    for i, e in enumerate(error_rates):
+        print(i+1, e)
 
-plt.title("Meat prediction")
-test = annotation_day01.copy()
-test[:,:,0] = meat_mask * 255
-plt.imshow(test)
-plt.show()
+    
+    
 
-# plt.matshow(annotation_day01)
-# plt.show()
+    print(f"Best spectral band: {1+best_spectral_band}")
+
+
+
+    plt.tight_layout()
+    plt.subplot(1,3,1)
+    plt.title("Fat mask")
+    fat_mask = fat_masks[best_spectral_band]
+    plt.imshow(fat_mask)
+
+    plt.subplot(1,3,2)
+    plt.title("Annotations")
+    plt.imshow(annotation_day01)
+
+    plt.subplot(1,3,3)
+    plt.title("Meat mask")
+    meat_mask = meat_masks[best_spectral_band]
+    plt.imshow(meat_mask)
+    plt.show()
+
+    plt.title("Meat prediction")
+    test = annotation_day01.copy()
+    test[:,:,0] = meat_mask * 255
+    plt.imshow(test)
+    plt.show()
+
+    # plt.matshow(annotation_day01)
+    # plt.show()
