@@ -4,6 +4,10 @@ import scipy.io as io
 import matplotlib.pyplot as plt
 from sklearn import metrics
 
+def S(x, mean, cov_matrix_inv, p):
+    res = np.dot(x, cov_matrix_inv @ mean) - 1/2 * np.dot(mean, cov_matrix_inv @ mean) + np.log(p)
+    return res
+
 # Same percentage of meat and fat
 p1 = 0.5
 p2 = 1 - p1
@@ -27,12 +31,6 @@ salami_mask = np.logical_or(
     meat_channel_mask)
 
 # print(np.average(multispectral_day01, 2, np.repeat(np.expand_dims(meat_channel_mask.astype(np.int32), axis=2), 19, 2)).size())
-
-
-def S(x, mean, cov_matrix_inv, p):
-    res = np.dot(x, cov_matrix_inv @ mean) - 1/2 * np.dot(mean, cov_matrix_inv @ mean) + np.log(p)
-    return res
-
 data_vecs = []
 
 fat_mask_actual = np.logical_and(fat_channel_mask, salami_mask)

@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import PIL.Image
 import scipy.io as io
@@ -39,6 +40,8 @@ for i in range(len(days)):
     error = 1 - (confusion_matrix[0,0] + confusion_matrix[1,1])/confusion_matrix.sum()
     error_rates_single_spectral_band.append(error)
 
+
+
 # all spectral bands
 p1 = 0.3
 p2 = 1 - p1
@@ -71,3 +74,7 @@ for i in range(len(days)):
 print(f"Model day: {model_day}")
 print(f"Errors single: {error_rates_single_spectral_band}")
 print(f"Errors all: {error_rates_all_spectral_bands}")
+#%% Save data as csv. file for latex
+error_to_csv = np.transpose(error_rates_all_spectral_bands)
+np.savetxt(f"ErrorRate_all_day: {model_day}.csv", error_to_csv, delimiter=' & ', fmt='%2.2e', newline=' \\\\\n')
+# %%
