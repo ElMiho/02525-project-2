@@ -9,19 +9,19 @@ def S(x, mean, cov_matrix_inv, p):
     return res
 
 # Same percentage of meat and fat
-p1 = 0.5
+p1 = 0.3
 p2 = 1 - p1
 
 folder = ".././files-from-learn/data/"
-model_day = "28"
+model_day = "06"
 
 multispectral_day01 = io.loadmat(folder + f"multispectral_day{model_day}.mat")["immulti"]
-annotation_day01 = PIL.Image.open(folder + f"annotation_day{model_day}.png")
-annotation_day01 = np.asarray(annotation_day01)
+annotation_day = PIL.Image.open(folder + f"annotation_day{model_day}.png")
+annotation_day = np.asarray(annotation_day)
 
-unknown_channel_mask = (annotation_day01[:,:,0] > 0)
-fat_channel_mask = (annotation_day01[:,:,1] > 0)
-meat_channel_mask = (annotation_day01[:,:,2] > 0)
+unknown_channel_mask = (annotation_day[:,:,0] > 0)
+fat_channel_mask = (annotation_day[:,:,1] > 0)
+meat_channel_mask = (annotation_day[:,:,2] > 0)
 
 mean_meat_list = []
 mean_fat_list = []
@@ -81,16 +81,20 @@ error = 1 - (confusion_matrix[0,0] + confusion_matrix[1,1])/confusion_matrix.sum
 if __name__ == "__main__":
     print(f"Error: {error}")
 
+    plt.figure()
     plt.subplot(1,3,1)
     plt.title("Fat predicted")
+    plt.axis('off')
     plt.imshow(fat_mask_predicted)
 
     plt.subplot(1,3,2)
     plt.title("Annotation")
-    plt.imshow(annotation_day01)
+    plt.axis('off')
+    plt.imshow(annotation_day)
 
     plt.subplot(1,3,3)
     plt.title("Meat predicted")
+    plt.axis('off')
     plt.imshow(im_meat_predicted)
 
     plt.show()
