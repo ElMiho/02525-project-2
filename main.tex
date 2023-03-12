@@ -11,10 +11,57 @@
 
 \title{Salami}
 \author{Hugo M. Nielsen (s214734) \and Mikael H. Hoffmann (s214753) \and Christian Valentin Kjær (s211469) \and Jacob Tuxen (s194572)}
-\date{DATE ???}
+\date{\today}
 
 \begin{document}
-
 \maketitle
+\section{Problem and background}
+When producing sausages and salami it is of great interest to determine the meat/fat ratio. Manually annotating sausages and salami requires a food expert and this is very time and resource consuming. 
+Therefore we will look at this problem by using image analysis and investigate whether it is possible to create a model which can 
+ 
+\section{Data and experiments}
+
+
+\section{Mathematical model}
+
+\subsection{Multivariate model}
+Every pixel in the multi-spectral images corresponds to meat or fat. Assuming that each pixel is an independent multivariate normal random variable, with distribution $\mathcal{N}(\boldsymbol{\mu}_i,\boldsymbol{\Sigma}),\:i\in\{1,2\}$, corresponding to meat or fat respectively. For a given pixel $\textbf{x}\in\mathbb{R}^n$ the mathematical problem is to determine whether $\textbf{x}\sim\mathcal{N}(\boldsymbol{\mu}_1,\boldsymbol{\Sigma})$ or $\textbf{x}\sim\mathcal{N}(\boldsymbol{\mu}_2,\boldsymbol{\Sigma})$.\\
+An observation $\textbf{x}$ is most likely to be in class 1 if $P(C_1|\textbf{x})>P(C_2|\textbf{x})$ by Bayes formula i.e $P(\textbf{x}|C_1)P(C_1)>P(\textbf{x}|C_2)P(C_2)$. Due to the assumption of each class being multivariate normally distributed with prior probabilities $P(C_i)=p_i,\:i\in\{1,2\}$, these distributions are known. By applying the logarithm and removing any terms not dependent on the class we define the threshold $S_i(\textbf{x})$ by,
+\begin{align*}
+    P(\textbf{x}|C_i)p_1&=\frac{1}{\sqrt{2\pi}^n\sqrt{|\boldsymbol{\Sigma}}|}\text{exp}\bigg[-\frac{1}{2}(\textbf{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\textbf{x}-\boldsymbol{\mu_i})\bigg]p_i \\
+    S_i(\textbf{x})&=-\frac{1}{2}(\textbf{x}-\boldsymbol{\mu_i})^T\boldsymbol{\Sigma}^{-1}(\textbf{x}-\boldsymbol{\mu}_i)+\log(p_i) \\
+    &=-\frac{1}{2}\big[\textbf{x}^T\boldsymbol{\Sigma}^{-1}-\boldsymbol{\mu}^T_i\boldsymbol{\Sigma}^{-1}(\textbf{x}-\boldsymbol{\mu}_i)]+\log(p_i)\\
+    &=-\frac{1}{2}\big[\textbf{x}^T\boldsymbol{\Sigma}^{-1}\textbf{x}-\textbf{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i-\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\textbf{x}+\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i\big]+\log(p_i) \\
+    &=\frac{1}{2}\big[\textbf{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i+\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\textbf{x}-\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i\big]+\log(p_i).
+\end{align*}
+Since $\boldsymbol{\Sigma}$, is symmetric we obtain  
+\begin{align*}
+    S_(\textbf{x})&=\frac{1}{2}\big[\textbf{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i+\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\textbf{x}-\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i\big]+\log(p_i)\\
+    &=\textbf{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i-\frac{1}{2}\boldsymbol{\mu}_i^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i+\log(p_i).\\
+\end{align*}
+Using this threshold the classification for each pixel can be made from the following function.
+\begin{align*}
+    \tau(\textbf{x})=\begin{cases}
+        C_1 \quad & S_1(\textbf{x})\geq S_2(\textbf{x}) \\
+        C_2 \quad & S_2(\textbf{x})<S_1(\textbf{x}).
+    \end{cases}
+\end{align*}
+\section{Results}
+\begin{tabular}{|c|c|c|c|c|c|c}
+\hline
+Test day & 01 & 06 & 13 & 20 & 28 \\
+\hline
+ Training day: 01 & - & 0.0678663 & 0.052972  & 0.0992975 & 0.146353  \\
+ Training day: 06 & 0.0245613 & - & 0.0209617 & 0.0335357 & 0.033407  \\
+ Training day: 13 & 0.0421846 & 0.0585285 & - & 0.0513861 & 0.0637519 \\
+ Training day: 20 & 0.0347886 & 0.0550122 & 0.0346372 & - & 0.0394442 \\
+ Training day: 28 & 0.0399817 & 0.0619729 & 0.0358711 & 0.0491302 & - \\
+\hline
+\end{tabular}
+\section{Conclude}
+
+
+\section{References}
+
 
 \end{document}
